@@ -5,7 +5,7 @@ import sqlite3
 
 
 app = FastAPI(title=("Apicollym"))
-
+max_id = 0
 # @app.on_event("startup",tags="DataBASE")
 # def startup():
 #     pass
@@ -62,7 +62,7 @@ def add_column():
 def clear_tasks():
     conn = sqlite3.connect("taskapp.db")
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM tareas")
+    cursor.execute("DELETE FROM Tasks")
     conn.commit()
     conn.close()
     return {"message": "Todos los valores de la tabla 'tareas' han sido eliminados"}
@@ -70,13 +70,15 @@ def clear_tasks():
 #CRUD
 @app.post("/CreateTask",tags=["CRUD"])
 def createtask(Title:str,Task:str):
-
     conn = sqlite3.connect("taskapp.db")
     cursor = conn.cursor()
     data = datetime.today().strftime('%Y-%m-%d')
     cursor.execute("INSERT INTO Tasks (Title, Task, date) VALUES (?, ?, ?)", (Title, Task, data))
     conn.commit()
     conn.close()
+
+
+
 
 @app.get("/ReadTasks",tags=["CRUD"])
 def readall():
@@ -88,10 +90,21 @@ def readall():
         FROM Tasks
         """
     )
+   
+    tasks = []
+    for row in cursor.fetchall():
+        task = {
+            "id": row[0],
+            "title": row[1],
+            "task": row[2],
+            "date": row[3]
+        }
+        tasks.append(task)
 
-    result = cursor.fetchall() # Obtener el resultado de la consulta
+    return tasks
+    
 
-    return result
+  
 
 
 @app.get("/Task/{id}",tags=["CRUD"])
@@ -127,16 +140,21 @@ def update(id: int, Title: str, Task: str):
 
 @app.delete("/Delete/{id}",tags=["CRUD"])
 def delete(id):
+   
     conn = sqlite3.connect("taskapp.db")
     cursor = conn.cursor()
     cursor.execute(
         """
         DELETE FROM Tasks
         WHERE id = ?
+        
         """,
         (id,)
     )
     conn.commit()
+   
+
+
    
 
 
