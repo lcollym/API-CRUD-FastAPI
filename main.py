@@ -6,21 +6,59 @@ import sqlite3
 
 app = FastAPI(title=("Apicollym"))
 
-# @app.on_event("startup")
+# @app.on_event("startup",tags="DataBASE")
 # def startup():
-#     createdatabase()
-@app.post("/insert")
+#     pass
+
+#Database
+@app.post("/ADDTable",tags=["DataBase"])
+def add_table():
+    conn = sqlite3.connect("taskapp.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS Tasks (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            Title TEXT NOT NULL,
+            Task TEXT NOT NULL,
+            date DATE
+        )
+    """)
+    conn.commit()
+    conn.close()
+
+
+@app.post("/DropTable",tags=["DataBase"])
+def drop():
+    conn = sqlite3.connect("taskapp.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        DROP TABLE IF EXISTS tareas
+    """)
+    conn.commit()
+    conn.close()
+
+@app.post("/insert",tags=["DataBase"])
 def add_column():
     conn = sqlite3.connect("taskapp.db")
     cursor = conn.cursor()
     cursor.execute("""
-        ALTER TABLE tareas
+        ALTER TABLE Tasks
         ADD COLUMN fecha DATE
     """)
     conn.commit()
     conn.close()
 
-@app.delete("/Clear")
+# @app.post("/AlterTable",tags="DataBASE")
+# def rename_column():
+#     conn = sqlite3.connect("taskapp.db")
+#     cursor = conn.cursor()
+#     cursor.execute("""
+#         ALTER TABLE RENAME date TO Date
+#     """)
+#     conn.commit()
+#     conn.close()
+
+@app.delete("/Clear",tags=["DataBase"])
 def clear_tasks():
     conn = sqlite3.connect("taskapp.db")
     cursor = conn.cursor()
@@ -29,25 +67,25 @@ def clear_tasks():
     conn.close()
     return {"message": "Todos los valores de la tabla 'tareas' han sido eliminados"}
 
-
-@app.post("/CreateTask")
-def createtask(id,titulo:str,tarea:str):
+#CRUD
+@app.post("/CreateTask",tags=["CRUD"])
+def createtask(Title:str,Task:str):
 
     conn = sqlite3.connect("taskapp.db")
     cursor = conn.cursor()
-    fecha = datetime.today()
-    cursor.execute("INSERT INTO tareas (id,titulo,tarea,fecha) VALUES (?,?,?,?)", (id,titulo,tarea,fecha))
+    data = datetime.today().strftime('%Y-%m-%d')
+    cursor.execute("INSERT INTO Tasks (Title, Task, date) VALUES (?, ?, ?)", (Title, Task, data))
     conn.commit()
     conn.close()
 
-@app.get("/ReadTasks")
+@app.get("/ReadTasks",tags=["CRUD"])
 def readall():
     conn = sqlite3.connect("taskapp.db")
     cursor = conn.cursor()
     cursor.execute(
           """
-        SELECT id,titulo,tarea,fecha
-        FROM tareas
+        SELECT id,Title,Task,date
+        FROM Tasks
         """
     )
 
@@ -56,48 +94,44 @@ def readall():
     return result
 
 
-@app.get("/Task/{id}")
+@app.get("/Task/{id}",tags=["CRUD"])
 def readall(id):
     conn = sqlite3.connect("taskapp.db")
     cursor = conn.cursor()
     cursor.execute(
           """
-        SELECT titulo,tarea
-        FROM tareas
+        SELECT Title,Task
+        FROM Tasks
         WHERE id = ?
         """,(id)
     )
 
-    result = cursor.fetchall() # Obtener el resultado de la consulta
+    result = cursor.fetchone() # Obtener el resultado de la consulta
 
     return result
     
 
 
-@app.put("/Update/{id}")
-def update(id: int, titulo: str, tarea: str):
+@app.put("/Update/{id}",tags=["CRUD"])
+def update(id: int, Title: str, Task: str):
     conn = sqlite3.connect("taskapp.db")
     cursor = conn.cursor()
     cursor.execute("""
-        UPDATE tareas
-        SET titulo = ?, tarea = ?
+        UPDATE Tasks
+        SET Title = ?, Task = ?
         WHERE id = ?
-    """, (titulo, tarea, id))
+    """, (Title, Task, id))
     conn.commit()
     conn.close()
 
 
-
-
-
-
-@app.delete("/Delete/{id}")
+@app.delete("/Delete/{id}",tags=["CRUD"])
 def delete(id):
     conn = sqlite3.connect("taskapp.db")
     cursor = conn.cursor()
     cursor.execute(
         """
-        DELETE FROM tareas
+        DELETE FROM Tasks
         WHERE id = ?
         """,
         (id,)
