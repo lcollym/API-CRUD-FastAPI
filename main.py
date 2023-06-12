@@ -4,6 +4,7 @@ from datetime import datetime
 import sqlite3
 
 
+
 app = FastAPI(title=("Apicollym"))
 max_id = 0
 # @app.on_event("startup",tags="DataBASE")
@@ -11,7 +12,13 @@ max_id = 0
 #     pass
 
 #Database
-@app.post("/ADDTable",tags=["DataBase"])
+@app.post("/DropTable",tags=["DataBase"])
+def drop():
+    conn = sqlite3.connect("taskapp.db")
+    cursor = conn.cursor()
+    cursor.execute("DROP TABLE IF EXISTS Tasks")
+
+@app.post("/CreateTable",tags=["DataBase"])
 def add_table():
     conn = sqlite3.connect("taskapp.db")
     cursor = conn.cursor()
@@ -27,15 +34,6 @@ def add_table():
     conn.close()
 
 
-@app.post("/DropTable",tags=["DataBase"])
-def drop():
-    conn = sqlite3.connect("taskapp.db")
-    cursor = conn.cursor()
-    cursor.execute("""
-        DROP TABLE IF EXISTS tareas
-    """)
-    conn.commit()
-    conn.close()
 
 @app.post("/insert",tags=["DataBase"])
 def add_column():
@@ -63,6 +61,7 @@ def clear_tasks():
     conn = sqlite3.connect("taskapp.db")
     cursor = conn.cursor()
     cursor.execute("DELETE FROM Tasks")
+    cursor.execute("DELETE FROM sqlite_sequence WHERE name='Tasks'")
     conn.commit()
     conn.close()
     return {"message": "Todos los valores de la tabla 'tareas' han sido eliminados"}
@@ -90,6 +89,7 @@ def readall():
         FROM Tasks
         """
     )
+    
    
     tasks = []
     for row in cursor.fetchall():
@@ -100,8 +100,11 @@ def readall():
             "date": row[3]
         }
         tasks.append(task)
+    
+
 
     return tasks
+    
     
 
   
@@ -151,7 +154,9 @@ def delete(id):
         """,
         (id,)
     )
+    
     conn.commit()
+    conn.close()
    
 
 
