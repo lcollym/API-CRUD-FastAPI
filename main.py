@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 # from pydantic import BaseModel
 from datetime import datetime
 import sqlite3
@@ -6,7 +7,21 @@ import sqlite3
 
 
 app = FastAPI(title=("Apicollym"))
-max_id = 0
+
+# Configuración de los orígenes permitidos (dominios)
+origins = [
+    "http://localhost",
+    "http://localhost:8080",
+    "https://example.com",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # @app.on_event("startup",tags="DataBASE")
 # def startup():
 #     pass
