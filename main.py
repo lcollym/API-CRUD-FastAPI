@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-# from pydantic import BaseModel
+from pydantic import BaseModel
 from datetime import datetime
 import sqlite3
 
@@ -9,15 +9,15 @@ import sqlite3
 app = FastAPI(title=("Apicollym"))
 
 # Configuración de los orígenes permitidos (dominios)
-origins = [
-    "http://localhost",
-    "http://localhost:8080",
-    "https://example.com",
-]
+# origins = [
+#     "http://localhost",
+#     "http://localhost:4200/",
+#     "https://example.com",
+# ]
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -82,14 +82,21 @@ def clear_tasks():
     return {"message": "Todos los valores de la tabla 'tareas' han sido eliminados"}
 
 #CRUD
-@app.post("/CreateTask",tags=["CRUD"])
-def createtask(Title:str,Task:str):
+
+class TaskCreate(BaseModel):
+    Title: str
+    Task: str
+
+@app.post("/CreateTask", tags=["CRUD"])
+def create_task(task: TaskCreate):
     conn = sqlite3.connect("taskapp.db")
     cursor = conn.cursor()
-    data = datetime.today().strftime('%Y-%m-%d')
-    cursor.execute("INSERT INTO Tasks (Title, Task, date) VALUES (?, ?, ?)", (Title, Task, data))
+    date = datetime.today().strftime('%Y-%m-%d')
+    cursor.execute("INSERT INTO Tasks (Title, Task, date) VALUES (?, ?, ?)",
+                   (task.Title, task.Task, date))
     conn.commit()
     conn.close()
+
 
 
 
@@ -117,7 +124,9 @@ def readall():
         tasks.append(task)
     
 
-
+    
+    conn.commit()
+    conn.close()
     return tasks
     
     
@@ -169,7 +178,7 @@ def delete(id):
         """,
         (id,)
     )
-    
+   
     conn.commit()
     conn.close()
    
