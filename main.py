@@ -102,7 +102,7 @@ def create_task(task: TaskCreate):
 
 
 @app.get("/ReadTasks",tags=["CRUD"])
-def readall():
+async def readall():
     conn = sqlite3.connect("taskapp.db")
     cursor = conn.cursor()
     cursor.execute(
@@ -112,18 +112,15 @@ def readall():
         """
     )
     
-   
     tasks = []
     for row in cursor.fetchall():
         task = {
             "id": row[0],
-            "title": row[1],
-            "task": row[2],
+            "Title": row[1],
+            "Task": row[2],
             "date": row[3]
         }
         tasks.append(task)
-    
-
     
     conn.commit()
     conn.close()
@@ -153,7 +150,7 @@ def readall(id):
 
 
 @app.put("/Update/{id}",tags=["CRUD"])
-def update(id: int, Title: str, Task: str):
+async def update(id: int, Title: str, Task: str):
     conn = sqlite3.connect("taskapp.db")
     cursor = conn.cursor()
     cursor.execute("""
@@ -181,6 +178,7 @@ def delete(id):
    
     conn.commit()
     conn.close()
+    return {"message": "Task deleted successfully"}
    
 
 
