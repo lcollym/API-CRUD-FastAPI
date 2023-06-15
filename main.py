@@ -99,7 +99,7 @@ def root(request: Request):
     return templates.TemplateResponse("index.html",context)
 
 @app.post("/CreateTask", tags=["CRUD"])
-def create_task(task: TaskCreate):
+async def create_task(task: TaskCreate):
     conn = sqlite3.connect("taskapp.db")
     cursor = conn.cursor()
     date = datetime.today().strftime('%Y-%m-%d')
@@ -171,7 +171,7 @@ async def readall():
 
 
 @app.delete("/Delete/{id}",tags=["CRUD"])
-def delete(id):
+async def delete(id):
    
     conn = sqlite3.connect("taskapp.db")
     cursor = conn.cursor()
