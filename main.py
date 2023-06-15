@@ -90,9 +90,10 @@ class TaskCreate(BaseModel):
 
 
 
-templates = Jinja2Templates(directory='tenplates')
+templates = Jinja2Templates(directory='templates')
 
-@app.get("/index/", response_class=HTMLResponse)
+@app.route('/')
+@app.get("/index", response_class=HTMLResponse)
 def root(request: Request):
     context = {"request":request}
     return templates.TemplateResponse("index.html",context)
