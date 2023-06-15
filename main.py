@@ -1,5 +1,7 @@
-from fastapi import FastAPI
+from fastapi import FastAPI,Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import RedirectResponse,HTMLResponse
+from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
 from datetime import datetime
 import sqlite3
@@ -9,18 +11,18 @@ import sqlite3
 app = FastAPI(title=("Apicollym"))
 
 # Configuración de los orígenes permitidos (dominios)
-# origins = [
-#     "http://localhost"
+origins = [
+    "http://localhost"
 
-# ]
+]
 
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=["*"],
-#     allow_credentials=True,
-#     allow_methods=["*"],
-#     allow_headers=["*"],
-# )
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 # @app.on_event("startup",tags="DataBASE")
 # def startup():
 #     pass
@@ -85,6 +87,15 @@ app = FastAPI(title=("Apicollym"))
 class TaskCreate(BaseModel):
     Title: str
     Task: str
+
+
+
+templates = Jinja2Templates(directory='tenplates')
+
+@app.get("/index/", response_class=HTMLResponse)
+def root(request: Request):
+    context = {"request":request}
+    return templates.TemplateResponse("index.html",context)
 
 @app.post("/CreateTask", tags=["CRUD"])
 def create_task(task: TaskCreate):
