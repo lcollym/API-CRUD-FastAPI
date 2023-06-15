@@ -9,18 +9,18 @@ import sqlite3
 app = FastAPI(title=("Apicollym"))
 
 # Configuración de los orígenes permitidos (dominios)
-origins = [
-    "http://localhost"
+# origins = [
+#     "http://localhost"
 
-]
+# ]
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# app.add_middleware(
+#     CORSMiddleware,
+#     allow_origins=["*"],
+#     allow_credentials=True,
+#     allow_methods=["*"],
+#     allow_headers=["*"],
+# )
 # @app.on_event("startup",tags="DataBASE")
 # def startup():
 #     pass
