@@ -23,11 +23,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# @app.on_event("startup",tags="DataBASE")
-# def startup():
-#     pass
 
-#Database
+
+# Database
 # @app.post("/DropTable",tags=["DataBase"])
 # def drop():
 #     conn = sqlite3.connect("taskapp.db")
@@ -62,7 +60,7 @@ app.add_middleware(
 #     conn.commit()
 #     conn.close()
 
-# @app.post("/AlterTable",tags="DataBASE")
+# @app.post("/AlterTable",tags=["DataBase"])
 # def rename_column():
 #     conn = sqlite3.connect("taskapp.db")
 #     cursor = conn.cursor()
@@ -72,15 +70,15 @@ app.add_middleware(
 #     conn.commit()
 #     conn.close()
 
-# @app.delete("/Clear",tags=["DataBase"])
-# def clear_tasks():
-#     conn = sqlite3.connect("taskapp.db")
-#     cursor = conn.cursor()
-#     cursor.execute("DELETE FROM Tasks")
-#     cursor.execute("DELETE FROM sqlite_sequence WHERE name='Tasks'")
-#     conn.commit()
-#     conn.close()
-#     return {"message": "Todos los valores de la tabla 'tareas' han sido eliminados"}
+@app.delete("/Clear",tags=["DataBase"])
+def clear_tasks():
+    conn = sqlite3.connect("taskapp.db")
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM Tasks")
+    cursor.execute("DELETE FROM sqlite_sequence WHERE name='Tasks'")
+    conn.commit()
+    conn.close()
+    return {"message": "Todos los valores de la tabla 'tareas' han sido eliminados"}
 
 #CRUD
 
@@ -93,7 +91,7 @@ class TaskCreate(BaseModel):
 templates = Jinja2Templates(directory='templates')
 
 @app.route('/')
-@app.get("/index", response_class=HTMLResponse)
+@app.get("/index", response_class=HTMLResponse,tags=["Home"])
 def root(request: Request):
     context = {"request":request}
     return templates.TemplateResponse("index.html",context)
@@ -107,8 +105,6 @@ async def create_task(task: TaskCreate):
                    (task.Title, task.Task, date))
     conn.commit()
     conn.close()
-
-
 
 
 
@@ -139,35 +135,35 @@ async def readall():
     
     
 
-# @app.get("/Task/{id}",tags=["CRUD"])
-# def readall(id):
-#     conn = sqlite3.connect("taskapp.db")
-#     cursor = conn.cursor()
-#     cursor.execute(
-#           """
-#         SELECT Title,Task
-#         FROM Tasks
-#         WHERE id = ?
-#         """,(id)
-#     )
+@app.get("/Task/{id}",tags=["CRUD"])
+def readall(id):
+    conn = sqlite3.connect("taskapp.db")
+    cursor = conn.cursor()
+    cursor.execute(
+          """
+        SELECT Title,Task
+        FROM Tasks
+        WHERE id = ?
+        """,(id)
+    )
 
-#     result = cursor.fetchone() # Obtener el resultado de la consulta
+    result = cursor.fetchone() 
 
-#     return result
+    return result
     
 
 
-# @app.put("/Update/{id}",tags=["CRUD"])
-# async def update(id: int, Title: str, Task: str):
-#     conn = sqlite3.connect("taskapp.db")
-#     cursor = conn.cursor()
-#     cursor.execute("""
-#         UPDATE Tasks
-#         SET Title = ?, Task = ?
-#         WHERE id = ?
-#     """, (Title, Task, id))
-#     conn.commit()
-#     conn.close()
+@app.put("/Update/{id}",tags=["CRUD"])
+async def update(id: int, Title: str, Task: str):
+    conn = sqlite3.connect("taskapp.db")
+    cursor = conn.cursor()
+    cursor.execute("""
+        UPDATE Tasks
+        SET Title = ?, Task = ?
+        WHERE id = ?
+    """, (Title, Task, id))
+    conn.commit()
+    conn.close()
 
 
 @app.delete("/Delete/{id}",tags=["CRUD"])
