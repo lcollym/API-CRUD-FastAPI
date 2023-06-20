@@ -5,6 +5,3 @@
    ![FastAPI](https://img.shields.io/badge/FastAPI-%2307405e.svg?style=for-the-badge&logo=fastapi&logoColor=white)
 
 
-![Captura de pantalla](./images/Code1.png)
-![Captura de pantalla](./images/code2.png)
-![Captura de pantalla](./images/code3.png)
