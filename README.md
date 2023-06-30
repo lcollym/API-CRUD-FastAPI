@@ -5,6 +5,6 @@
    ![FastAPI](https://img.shields.io/badge/FastAPI-%2307405e.svg?style=for-the-badge&logo=fastapi&logoColor=white)
 
    
-   - View API: [link](https://api-collymoore.up.railway.app/)
+   - View : [API CRUDB= BY @COLLYMOORE](https://api-collymoore.up.railway.app/)
 
 
