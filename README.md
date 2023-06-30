@@ -4,4 +4,7 @@
    ![SQLite](https://img.shields.io/badge/SQLite-%2307405e.svg?style=for-the-badge&logo=sqlite&logoColor=blue)
    ![FastAPI](https://img.shields.io/badge/FastAPI-%2307405e.svg?style=for-the-badge&logo=fastapi&logoColor=white)
 
+   
+   - View API: [link](https://api-collymoore.up.railway.app/)
+
 
